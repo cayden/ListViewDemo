@@ -1,5 +1,9 @@
 package com.cayden.listview;
 
+
+
+
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -9,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -21,18 +26,27 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 	boolean isRemark;// 标记，当前是在listview最顶端摁下的；
 	int startY;// 摁下时的Y值；
 	int state;// 当前的状态；
-	
+
 	final int NONE = 0;// 正常状态；
 	final int PULL = 1;// 提示下拉状态；
 	final int RELESE = 2;// 提示释放状态；
 	final int REFLASHING = 3;// 刷新状态；
+	IRefreshListener iRefreshListener;//刷新数据的接口
 	
-	IReflashListener iReflashListener;//刷新数据的接口
+	
+	View footer;// 底部布局；
+	int totalItemCount;// 总数量；
+	int lastVisibleItem;// 最后一个可见的item；
+	boolean isLoading;// 正在加载；
+	LinearLayout linearLayout=null;
+	ILoadListener iLoadListener;
 	
 	private RoundProgressBar roundProgressBar=null;	//自定义进度条
 	private TextView tip;
 	private int progress = 0;                     	//进度值
 	boolean running=false;							  //标记线程运行状态
+	
+	
 	public ReFlashListView(Context context) {
 		super(context);
 		initView(context);
@@ -65,6 +79,13 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 		Log.i("tag", "headerHeight = " + headerHeight);
 		topPadding(-headerHeight);
 		this.addHeaderView(header);
+		
+		inflater = LayoutInflater.from(context);
+		footer = inflater.inflate(R.layout.footer_layout, null);
+		linearLayout=(LinearLayout)footer.findViewById(R.id.load_layout);
+		linearLayout.setVisibility(View.GONE);
+		this.addFooterView(footer);
+		
 		this.setOnScrollListener(this);
 	}
 
@@ -106,11 +127,23 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		this.firstVisibleItem = firstVisibleItem;
+		this.lastVisibleItem = firstVisibleItem + visibleItemCount;
+		this.totalItemCount = totalItemCount;
 	}
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		this.scrollState = scrollState;
+		if (totalItemCount == lastVisibleItem
+				&& scrollState == SCROLL_STATE_IDLE) {
+			if (!isLoading) {
+				isLoading = true;
+				footer.findViewById(R.id.load_layout).setVisibility(
+						View.VISIBLE);
+				// 加载更多
+				iLoadListener.onLoad();
+			}
+		}
 	}
 
 	@Override
@@ -133,7 +166,7 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 				progress=360;
 				// 加载最新数据；
 				reflashViewByState();
-				iReflashListener.onReflash();
+				iRefreshListener.onRefresh();
 			} else if (state == PULL) {
 				state = NONE;
 				isRemark = false;
@@ -264,15 +297,46 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 		reflashViewByState();
 	
 	}
+	/**
+	 * 设置下拉刷新回调方法
+	 * 
+	 * @param iRefreshListener
+	 *
+	 */
+	public void setIRefreshInterface(IRefreshListener iRefreshListener){
+		this.iRefreshListener = iRefreshListener;
+	}
 	
-	public void setInterface(IReflashListener iReflashListener){
-		this.iReflashListener = iReflashListener;
+	/**
+	 * 加载完毕
+	 */
+	public void loadComplete(){
+		isLoading = false;
+		footer.findViewById(R.id.load_layout).setVisibility(
+				View.GONE);
+	}
+	/**
+	 * 设置加载更多数据回调方法
+	 * 
+	 * @param iLoadListener
+	 *
+	 */
+	public void setILoadInterface(ILoadListener iLoadListener){
+		this.iLoadListener = iLoadListener;
 	}
 	/**
 	 * 刷新数据接口
-	 * @author Administrator
+	 * @author cuiran
 	 */
-	public interface IReflashListener{
-		public void onReflash();
+	public interface IRefreshListener{
+		public void onRefresh();
+	}
+	
+	/**
+	 * 加载更多数据的回调接口
+	 * @author cuiran
+	 */
+	public interface ILoadListener{
+		public void onLoad();
 	}
 }

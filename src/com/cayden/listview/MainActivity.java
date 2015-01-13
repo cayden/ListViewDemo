@@ -6,9 +6,10 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.cayden.listview.ReFlashListView.IReflashListener;
+import com.cayden.listview.ReFlashListView.ILoadListener;
+import com.cayden.listview.ReFlashListView.IRefreshListener;
 
-public class MainActivity extends Activity implements IReflashListener{
+public class MainActivity extends Activity implements IRefreshListener,ILoadListener{
 	ArrayList<ApkEntity> apk_list;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +24,8 @@ public class MainActivity extends Activity implements IReflashListener{
 	private void showList(ArrayList<ApkEntity> apk_list) {
 		if (adapter == null) {
 			listview = (ReFlashListView) findViewById(R.id.listview);
-			listview.setInterface(this);
+			listview.setIRefreshInterface(this);
+			listview.setILoadInterface(this);
 			adapter = new MyAdapter(this, apk_list);
 			listview.setAdapter(adapter);
 		} else {
@@ -51,8 +53,17 @@ public class MainActivity extends Activity implements IReflashListener{
 			apk_list.add(0,entity);
 		}
 	}
+	private void getLoadData() {
+		for (int i = 0; i < 2; i++) {
+			ApkEntity entity = new ApkEntity();
+			entity.setName("更多程序");
+			entity.setInfo("50w用户");
+			entity.setDes("这是一个神奇的应用！");
+			apk_list.add(entity);
+		}
+	}
 	@Override
-	public void onReflash() {
+	public void onRefresh() {
 		// TODO Auto-generated method stub\
 		Handler handler = new Handler();
 		handler.postDelayed(new Runnable() {
@@ -69,5 +80,23 @@ public class MainActivity extends Activity implements IReflashListener{
 			}
 		}, 2000);
 		
+	}
+
+	@Override
+	public void onLoad() {
+		Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				//获取更多数据
+				getLoadData();
+				//更新listview显示；
+				showList(apk_list);
+				//通知listview加载完毕
+				listview.loadComplete();
+			}
+		}, 2000);
 	}
 }
