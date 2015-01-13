@@ -17,8 +17,12 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
-public class ReFlashListView extends ListView implements OnScrollListener {
+/**
+ * 自定义ListView 实现下拉刷新，加载更多效果 
+ * @author cuiran
+ * @version 1.0.0
+ */
+public class CustomerListView extends ListView implements OnScrollListener {
 	View header;// 顶部布局文件；
 	int headerHeight;// 顶部布局文件的高度；
 	int firstVisibleItem;// 当前第一个可见的item的位置；
@@ -47,17 +51,17 @@ public class ReFlashListView extends ListView implements OnScrollListener {
 	boolean running=false;							  //标记线程运行状态
 	
 	
-	public ReFlashListView(Context context) {
+	public CustomerListView(Context context) {
 		super(context);
 		initView(context);
 	}
 
-	public ReFlashListView(Context context, AttributeSet attrs) {
+	public CustomerListView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initView(context);
 	}
 
-	public ReFlashListView(Context context, AttributeSet attrs, int defStyle) {
+	public CustomerListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initView(context);
 	}

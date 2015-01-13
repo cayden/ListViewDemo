@@ -6,8 +6,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.cayden.listview.ReFlashListView.ILoadListener;
-import com.cayden.listview.ReFlashListView.IRefreshListener;
+import com.cayden.listview.CustomerListView.ILoadListener;
+import com.cayden.listview.CustomerListView.IRefreshListener;
 
 public class MainActivity extends Activity implements IRefreshListener,ILoadListener{
 	ArrayList<ApkEntity> apk_list;
@@ -20,10 +20,10 @@ public class MainActivity extends Activity implements IRefreshListener,ILoadList
 	}
 
 	MyAdapter adapter;
-	ReFlashListView listview;
+	CustomerListView listview;
 	private void showList(ArrayList<ApkEntity> apk_list) {
 		if (adapter == null) {
-			listview = (ReFlashListView) findViewById(R.id.listview);
+			listview = (CustomerListView) findViewById(R.id.listview);
 			listview.setIRefreshInterface(this);
 			listview.setILoadInterface(this);
 			adapter = new MyAdapter(this, apk_list);

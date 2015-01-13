@@ -5,7 +5,7 @@
     android:background="@color/white"
     tools:context=".MainActivity" >
 
-    <com.cayden.listview.ReFlashListView
+    <com.cayden.listview.CustomerListView
         android:id="@+id/listview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

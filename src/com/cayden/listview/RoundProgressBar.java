@@ -11,7 +11,6 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 
@@ -72,7 +71,7 @@ public class RoundProgressBar extends View {
 	
 	public static final int STROKE = 0;
 	public static final int FILL = 1;
-	
+	/**是否循环**/
 	public  boolean isSpinning = false;
 	
 	public RoundProgressBar(Context context) {
@@ -121,7 +120,7 @@ public class RoundProgressBar extends View {
 		canvas.drawCircle(centre, centre, radius, paint); //画出圆环
 		
 		/**
-		 * 画进度百分比
+		 * 画进度百分比 现已去掉改成画图片
 		 */
 //		paint.setStrokeWidth(0); 
 //		paint.setColor(textColor);
@@ -143,12 +142,10 @@ public class RoundProgressBar extends View {
 				int height=bitmap.getHeight();
 				canvas.drawBitmap(bitmap, centre-width/2, centre-height/2 , paint);
 				
-				 bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.loading06);
-				 width=bitmap.getWidth();
-				 height=bitmap.getHeight();
-			    	
-				 canvas.drawBitmap(bitmap, centre-width/2, centre-height/2 , paint);
-				
+				bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.loading06);
+				width=bitmap.getWidth();
+				height=bitmap.getHeight();
+				canvas.drawBitmap(bitmap, centre-width/2, centre-height/2 , paint);
 				/**
 				 * 画圆弧 ，画圆环的进度
 				 */
@@ -167,17 +164,13 @@ public class RoundProgressBar extends View {
 				int width=bitmap.getWidth();
 				int height=bitmap.getHeight();
 				canvas.drawBitmap(bitmap, centre-width/2, centre-height/2 , paint);
-				
 				 bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.loading05);
 				 width=bitmap.getWidth();
 				 height=bitmap.getHeight();
-			    	
 				 canvas.drawBitmap(bitmap, centre-width/2, centre-height/2 , paint);
-				
 				/**
 				 * 画圆弧 ，画圆环的进度
 				 */
-				
 				//设置进度是实心还是空心
 				paint.setStrokeWidth(roundWidth); //设置圆环的宽度
 				paint.setColor(roundProgressColor);  //设置进度的颜色
