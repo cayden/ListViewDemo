@@ -165,9 +165,11 @@ public class CustomerListView extends ListView implements OnScrollListener {
 			onMove(ev);
 			break;
 		case MotionEvent.ACTION_UP:
+			spin();
 			if (state == RELESE) {
 				state = REFLASHING;
 				progress=360;
+				
 				// 加载最新数据；
 				reflashViewByState();
 				iRefreshListener.onRefresh();
@@ -181,6 +183,7 @@ public class CustomerListView extends ListView implements OnScrollListener {
 		return super.onTouchEvent(ev);
 	}
 
+	int moveY=0;
 	/**
 	 * 判断移动过程操作；
 	 * 
@@ -190,10 +193,17 @@ public class CustomerListView extends ListView implements OnScrollListener {
 		if (!isRemark) {
 			return;
 		}
+		
 		int tempY = (int) ev.getY();
+		if(tempY<startY)return;
 		int space = tempY - startY;
 		int topPadding = space - headerHeight;
-		progress=progress+6;
+		if(tempY>=moveY){
+			progress=progress+10;
+		}else{
+			progress=progress-10;
+		}
+		
 		switch (state) {
 		case NONE:
 			if (space > 0) {
@@ -222,6 +232,7 @@ public class CustomerListView extends ListView implements OnScrollListener {
 			}
 			break;
 		}
+		moveY=tempY;
 	}
 	/**
 	 * 进度条递增显示
@@ -253,6 +264,9 @@ public class CustomerListView extends ListView implements OnScrollListener {
 			public void run() {
 				running = true;
 				while(progress<361) {
+					if(progress<=0){
+						progress=0;
+					}
 					roundProgressBar.setProgress(progress);
 					roundProgressBar.incrementProgress();
 					try {
@@ -283,7 +297,7 @@ public class CustomerListView extends ListView implements OnScrollListener {
 			tip.setVisibility(View.VISIBLE);
 			break;
 		case REFLASHING:
-			spin();
+			
 			topPadding(50);
 			roundProgressBar.setVisibility(View.VISIBLE);
 			tip.setText("正在刷新...");
