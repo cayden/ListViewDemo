@@ -23,6 +23,7 @@ import android.widget.TextView;
  * @version 1.0.0
  */
 public class CustomerListView extends ListView implements OnScrollListener {
+	private static final String TAG="CustomerListView";
 	View header;// 顶部布局文件；
 	int headerHeight;// 顶部布局文件的高度；
 	int firstVisibleItem;// 当前第一个可见的item的位置；
@@ -166,6 +167,7 @@ public class CustomerListView extends ListView implements OnScrollListener {
 			break;
 		case MotionEvent.ACTION_UP:
 			spin();
+			Log.i(TAG, "MotionEvent.ACTION_UP ");
 			if (state == RELESE) {
 				state = REFLASHING;
 				progress=360;
@@ -234,15 +236,17 @@ public class CustomerListView extends ListView implements OnScrollListener {
 		}
 		moveY=tempY;
 	}
+	Thread s=null;
 	/**
 	 * 进度条递增显示
 	 *
 	 */
 	private void increment(){
 		if(!running) {
+			running = true;
 			progress = 0;
 			roundProgressBar.resetCount();
-			Thread s = new Thread(r);
+			s = new Thread(r);
 			s.start();
 		}
 	}
@@ -251,18 +255,19 @@ public class CustomerListView extends ListView implements OnScrollListener {
 	 *
 	 */
 	private void spin(){
-		if(!running) {
+		Log.i(TAG, "spin");
+//		if(!running) {
 			if(roundProgressBar.isSpinning){
 				roundProgressBar.stopSpinning();
 			}
 			roundProgressBar.resetCount();
 			roundProgressBar.spin();
-		}
+//		}
 	}
 	
 	  final Runnable r = new Runnable() {
 			public void run() {
-				running = true;
+			
 				while(progress<361) {
 					if(progress<=0){
 						progress=0;
